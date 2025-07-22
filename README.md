@@ -42,7 +42,7 @@ A comprehensive web-based Student Management System built with Django and Django
 
 ### 1. Clone the Repository
 ```bash
-git clone <your-repository-url>
+git clone <https://github.com/nilkanth02/Student-management-system-using-Django.git>
 cd student_management_system/Home
 ```
 
@@ -200,11 +200,7 @@ pip install gunicorn
 gunicorn student_management.wsgi:application
 ```
 
-### Deployment Platforms
-- **Heroku**: Ready for Heroku deployment
-- **Railway**: Compatible with Railway
-- **DigitalOcean**: Works with App Platform
-- **AWS**: Compatible with Elastic Beanstalk
+
 
 ## 📝 Project Structure
 
@@ -225,8 +221,7 @@ student_management_system/
 │       ├── permissions.py     # Custom permissions
 │       ├── templates/         # Web templates
 │       └── management/        # Custom commands
-├── API_DOCUMENTATION.md       # Detailed API docs
-└── README.md                 # This file
+└── README.md                  # This file
 ```
 
 ## 🎯 Key Features for Recruiters
