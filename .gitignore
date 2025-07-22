@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+API_DOCUMENTATION.md
+DEPLOYMENT_GUIDE.md
+RECRUITER_PRESENTATION.md
+
 # Distribution / packaging
 .Python
 build/
