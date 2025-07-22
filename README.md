@@ -255,14 +255,3 @@ python manage.py runserver
 
 Visit the web interface and admin panel to explore all features.
 
-## 📞 Support
-
-For questions or issues, please refer to the API documentation or check the Django admin interface for data management.
-
-## 📄 License
-
-This project is created for educational and portfolio purposes.
-
----
-
-**Built with ❤️ using Django & Django REST Framework**
