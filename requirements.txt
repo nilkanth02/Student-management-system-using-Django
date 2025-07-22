@@ -4,3 +4,5 @@ django-filter==25.1
 asgiref==3.9.1
 sqlparse==0.5.3
 tzdata==2025.2
+
+gunicorn 
