@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ student.full_name }} - Student Management System{% endblock %}
+
+{% block page_title_main %}Student Details{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <!-- Student Info Card -->
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="avatar-lg bg-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                    <span class="text-white h3">{{ student.first_name.0 }}{{ student.last_name.0 }}</span>
+                </div>
+                <h4>{{ student.full_name }}</h4>
+                <p class="text-muted">{{ student.student_id }}</p>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h5 class="text-primary">{{ gpa|floatformat:2 }}</h5>
+                        <small class="text-muted">GPA</small>
+                    </div>
+                    <div class="col-6">
+                        <h5 class="text-success">{{ attendance_percentage|floatformat:1 }}%</h5>
+                        <small class="text-muted">Attendance</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="m-0">Contact Information</h6>
+            </div>
+            <div class="card-body">
+                <p><i class="fas fa-envelope text-primary me-2"></i> {{ student.email }}</p>
+                <p><i class="fas fa-phone text-success me-2"></i> {{ student.phone }}</p>
+                <p><i class="fas fa-map-marker-alt text-danger me-2"></i> {{ student.address }}</p>
+                <p><i class="fas fa-birthday-cake text-warning me-2"></i> {{ student.date_of_birth }} ({{ student.age }} years)</p>
+            </div>
+        </div>
+
+        <!-- Academic Info -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="m-0">Academic Information</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Department:</strong> {{ student.department.name }}</p>
+                <p><strong>Year of Study:</strong> Year {{ student.year_of_study }}</p>
+                <p><strong>Admission Date:</strong> {{ student.admission_date }}</p>
+                <p><strong>Status:</strong> 
+                    {% if student.is_active %}
+                        <span class="badge bg-success">Active</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h4 class="text-primary">{{ total_courses }}</h4>
+                        <small class="text-muted">Total Courses</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h4 class="text-success">{{ active_enrollments }}</h4>
+                        <small class="text-muted">Active Enrollments</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h4 class="text-info">{{ completed_courses }}</h4>
+                        <small class="text-muted">Completed</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h4 class="text-warning">{{ student.gender }}</h4>
+                        <small class="text-muted">Gender</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enrollments -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0">Course Enrollments</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Credits</th>
+                                <th>Status</th>
+                                <th>Grade</th>
+                                <th>Enrollment Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for enrollment in enrollments %}
+                            <tr>
+                                <td>
+                                    <strong>{{ enrollment.course.course_code }}</strong>
+                                    <small class="d-block text-muted">{{ enrollment.course.name }}</small>
+                                </td>
+                                <td>{{ enrollment.course.credits }}</td>
+                                <td>
+                                    {% if enrollment.status == 'ENROLLED' %}
+                                        <span class="badge bg-primary">{{ enrollment.status }}</span>
+                                    {% elif enrollment.status == 'COMPLETED' %}
+                                        <span class="badge bg-success">{{ enrollment.status }}</span>
+                                    {% elif enrollment.status == 'DROPPED' %}
+                                        <span class="badge bg-secondary">{{ enrollment.status }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ enrollment.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if enrollment.final_grade %}
+                                        <span class="badge bg-info">{{ enrollment.final_grade }}</span>
+                                    {% else %}
+                                        <small class="text-muted">In Progress</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ enrollment.enrollment_date }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No enrollments found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Contact -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="m-0">Emergency Contact</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>Name:</strong><br>
+                        {{ student.emergency_contact_name }}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Phone:</strong><br>
+                        {{ student.emergency_contact_phone }}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Relationship:</strong><br>
+                        {{ student.emergency_contact_relationship }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <a href="{% url 'students:student_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Students
+        </a>
+        <a href="/admin/students/student/{{ student.id }}/change/" class="btn btn-primary">
+            <i class="fas fa-edit"></i> Edit Student
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+
+{% block title %}Students - EduManage{% endblock %}
+
+{% block page_title_main %}Students{% endblock %}
+{% block page_description %}Manage and view all student records{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group">
+    <a href="/admin/students/student/add/" class="btn btn-primary">
+        <i class="fas fa-user-plus me-2"></i>Add Student
+    </a>
+    <button class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+        <span class="visually-hidden">Toggle Dropdown</span>
+    </button>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#"><i class="fas fa-file-import me-2"></i>Import Students</a></li>
+        <li><a class="dropdown-item" href="#"><i class="fas fa-file-export me-2"></i>Export List</a></li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Search and Filter Bar -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body p-3">
+                <form method="get" class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input class="form-control" type="search" name="search" placeholder="Search by name, ID, or email..." value="{{ request.GET.search }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="year_of_study">
+                            <option value="">All Years</option>
+                            <option value="1" {% if request.GET.year_of_study == '1' %}selected{% endif %}>First Year</option>
+                            <option value="2" {% if request.GET.year_of_study == '2' %}selected{% endif %}>Second Year</option>
+                            <option value="3" {% if request.GET.year_of_study == '3' %}selected{% endif %}>Third Year</option>
+                            <option value="4" {% if request.GET.year_of_study == '4' %}selected{% endif %}>Fourth Year</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="btn-group w-100">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i>Search
+                            </button>
+                            <a href="{% url 'students:student_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body p-3">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <h5 class="text-primary mb-0">{{ students|length }}</h5>
+                        <small class="text-muted">Showing</small>
+                    </div>
+                    <div class="col-4">
+                        <h5 class="text-success mb-0">{{ active_count }}</h5>
+                        <small class="text-muted">Active</small>
+                    </div>
+                    <div class="col-4">
+                        <h5 class="text-info mb-0">{{ departments_count }}</h5>
+                        <small class="text-muted">Departments</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Students Grid -->
+<div class="row">
+    {% for student in students %}
+    <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
+        <div class="card student-card h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="avatar-lg bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                        <span class="text-white h5 mb-0">{{ student.first_name.0 }}{{ student.last_name.0 }}</span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="card-title mb-1">{{ student.full_name }}</h5>
+                        <p class="text-muted small mb-0">{{ student.student_id }}</p>
+                        {% if student.is_active %}
+                            <span class="badge bg-success-subtle text-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-secondary-subtle text-secondary">Inactive</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="student-info">
+                    <div class="info-item d-flex align-items-center mb-2">
+                        <i class="fas fa-envelope text-primary me-2"></i>
+                        <span class="small text-truncate">{{ student.email }}</span>
+                    </div>
+                    <div class="info-item d-flex align-items-center mb-2">
+                        <i class="fas fa-building text-success me-2"></i>
+                        <span class="small">{{ student.department.name }}</span>
+                    </div>
+                    <div class="info-item d-flex align-items-center mb-2">
+                        <i class="fas fa-graduation-cap text-warning me-2"></i>
+                        <span class="small">Year {{ student.year_of_study }}</span>
+                    </div>
+                    <div class="info-item d-flex align-items-center mb-3">
+                        <i class="fas fa-calendar text-info me-2"></i>
+                        <span class="small">Admitted {{ student.admission_date|date:"M Y" }}</span>
+                    </div>
+                </div>
+
+                <div class="card-actions d-flex gap-2">
+                    <a href="{% url 'students:student_detail' student.id %}" class="btn btn-primary btn-sm flex-grow-1">
+                        <i class="fas fa-eye me-1"></i>View Details
+                    </a>
+                    <a href="/admin/students/student/{{ student.id }}/change/" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <div class="empty-state">
+                    <i class="fas fa-user-graduate fa-4x text-muted mb-4"></i>
+                    <h4 class="text-muted mb-3">No Students Found</h4>
+                    <p class="text-muted mb-4">
+                        {% if request.GET.search %}
+                            No students match your search criteria. Try adjusting your search terms.
+                        {% else %}
+                            Get started by adding your first student to the system.
+                        {% endif %}
+                    </p>
+                    <div class="d-flex justify-content-center gap-2">
+                        {% if request.GET.search %}
+                            <a href="{% url 'students:student_list' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-times me-2"></i>Clear Search
+                            </a>
+                        {% endif %}
+                        <a href="/admin/students/student/add/" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Add First Student
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+.student-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.student-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.info-item {
+    padding: 0.25rem 0;
+}
+
+.info-item i {
+    width: 16px;
+    text-align: center;
+}
+
+.empty-state {
+    max-width: 400px;
+    margin: 0 auto;
+}
+</style>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<div class="row mt-4">
+    <div class="col-12">
+        <nav aria-label="Students pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.year_of_study %}&year_of_study={{ request.GET.year_of_study }}{% endif %}">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.year_of_study %}&year_of_study={{ request.GET.year_of_study }}{% endif %}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.year_of_study %}&year_of_study={{ request.GET.year_of_study }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.year_of_study %}&year_of_study={{ request.GET.year_of_study }}{% endif %}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.year_of_study %}&year_of_study={{ request.GET.year_of_study }}{% endif %}">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <div class="text-center mt-3">
+            <small class="text-muted">
+                Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} students
+            </small>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

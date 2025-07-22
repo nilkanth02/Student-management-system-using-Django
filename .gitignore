@@ -6,9 +6,7 @@ __pycache__/
 # C extensions
 *.so
 
-API_DOCUMENTATION.md
-DEPLOYMENT_GUIDE.md
-RECRUITER_PRESENTATION.md
+
 
 # Distribution / packaging
 .Python
@@ -184,7 +182,9 @@ cython_debug/
 # Ignore directories containing user credentials, local state, and settings.
 # Learn more at https://abstra.io/docs
 .abstra/
-
+API_DOCUMENTATION.md
+DEPLOYMENT_GUIDE.md
+RECRUITER_PRESENTATION.md
 # Visual Studio Code
 #  Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore 
 #  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore

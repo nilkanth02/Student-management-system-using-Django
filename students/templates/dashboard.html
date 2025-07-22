@@ -1,0 +1,557 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - EduManage{% endblock %}
+
+{% block page_title_main %}Dashboard{% endblock %}
+{% block page_description %}Get insights into your educational institution's performance{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group">
+    <a href="{% url 'students:student_list' %}" class="btn btn-primary">
+        <i class="fas fa-user-plus me-2"></i>Add Student
+    </a>
+    <a href="{% url 'students:course_list' %}" class="btn btn-success">
+        <i class="fas fa-book-plus me-2"></i>Add Course
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Banner -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card glass-effect border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="mb-2" style="color: white;">Welcome back, Admin! 👋</h2>
+                        <p class="mb-0 opacity-75">Here's what's happening in your institution today</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="d-flex justify-content-end">
+                            <div class="text-center me-4">
+                                <h4 class="mb-0" style="color: white;">{{ stats.recent_enrollments }}</h4>
+                                <small class="opacity-75">New This Month</small>
+                            </div>
+                            <div class="text-center">
+                                <h4 class="mb-0" style="color: white;">{{ stats.average_attendance_percentage|floatformat:0 }}%</h4>
+                                <small class="opacity-75">Avg Attendance</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-5">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase fw-bold mb-2" style="font-size: 0.8rem; letter-spacing: 1px;">Total Students</div>
+                        <div class="h2 mb-0 fw-bold">{{ stats.total_students }}</div>
+                        <small class="opacity-75">Active learners</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: rgba(255,255,255,0.2);">
+                            <i class="fas fa-user-graduate fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card success h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase fw-bold mb-2" style="font-size: 0.8rem; letter-spacing: 1px;">Total Courses</div>
+                        <div class="h2 mb-0 fw-bold">{{ stats.total_courses }}</div>
+                        <small class="opacity-75">Available courses</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: rgba(255,255,255,0.2);">
+                            <i class="fas fa-book-open fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card warning h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase fw-bold mb-2" style="font-size: 0.8rem; letter-spacing: 1px;">Total Teachers</div>
+                        <div class="h2 mb-0 fw-bold">{{ stats.total_teachers }}</div>
+                        <small class="opacity-75">Faculty members</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: rgba(255,255,255,0.2);">
+                            <i class="fas fa-chalkboard-teacher fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card info h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase fw-bold mb-2" style="font-size: 0.8rem; letter-spacing: 1px;">Departments</div>
+                        <div class="h2 mb-0 fw-bold">{{ stats.total_departments }}</div>
+                        <small class="opacity-75">Academic divisions</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: rgba(255,255,255,0.2);">
+                            <i class="fas fa-building fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts and Analytics Row -->
+<div class="row mb-5">
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header bg-transparent border-0 pb-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title mb-1">Student Distribution</h5>
+                        <p class="text-muted small mb-0">Overview of students across departments</p>
+                    </div>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary active" data-chart="department">By Department</button>
+                        <button class="btn btn-outline-primary" data-chart="year">By Year</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="position: relative; height: 300px;">
+                    <canvas id="mainChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header bg-transparent border-0 pb-0">
+                <h5 class="card-title mb-1">Quick Stats</h5>
+                <p class="text-muted small mb-0">Key performance indicators</p>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                        <i class="fas fa-chart-line text-primary"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">Enrollment Rate</h6>
+                        <div class="d-flex align-items-center">
+                            <span class="h5 mb-0 me-2">85%</span>
+                            <span class="badge bg-success-subtle text-success">+12%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center mb-4">
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                        <i class="fas fa-user-check text-success"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">Attendance Rate</h6>
+                        <div class="d-flex align-items-center">
+                            <span class="h5 mb-0 me-2">{{ stats.average_attendance_percentage|floatformat:0 }}%</span>
+                            <span class="badge bg-success-subtle text-success">Good</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center mb-4">
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                        <i class="fas fa-graduation-cap text-warning"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">Completion Rate</h6>
+                        <div class="d-flex align-items-center">
+                            <span class="h5 mb-0 me-2">92%</span>
+                            <span class="badge bg-warning-subtle text-warning">+5%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                        <i class="fas fa-star text-info"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">Average GPA</h6>
+                        <div class="d-flex align-items-center">
+                            <span class="h5 mb-0 me-2">3.4</span>
+                            <span class="badge bg-info-subtle text-info">Stable</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activities and Quick Actions -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-transparent border-0 pb-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title mb-1">Recent Activity</h5>
+                        <p class="text-muted small mb-0">Latest enrollments and updates</p>
+                    </div>
+                    <a href="{% url 'students:enrollment_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="activity-feed">
+                    {% for enrollment in recent_enrollments %}
+                    <div class="activity-item d-flex align-items-center mb-3 pb-3 border-bottom">
+                        <div class="activity-avatar me-3">
+                            <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center">
+                                <span class="text-white small fw-bold">{{ enrollment.student.first_name.0 }}{{ enrollment.student.last_name.0 }}</span>
+                            </div>
+                        </div>
+                        <div class="activity-content flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ enrollment.student.full_name }}</h6>
+                                    <p class="text-muted small mb-0">
+                                        Enrolled in <strong>{{ enrollment.course.course_code }}</strong> - {{ enrollment.course.name }}
+                                    </p>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success-subtle text-success">{{ enrollment.status }}</span>
+                                    <small class="d-block text-muted">{{ enrollment.enrollment_date|date:"M d" }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No recent enrollments</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Quick Actions Card -->
+        <div class="card mb-4">
+            <div class="card-header bg-transparent border-0 pb-0">
+                <h5 class="card-title mb-1">Quick Actions</h5>
+                <p class="text-muted small mb-0">Common tasks and shortcuts</p>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <a href="{% url 'students:student_list' %}" class="btn btn-primary w-100 p-3 text-center">
+                            <i class="fas fa-user-plus fa-2x mb-2 d-block"></i>
+                            <small class="fw-bold">Add Student</small>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="{% url 'students:course_list' %}" class="btn btn-success w-100 p-3 text-center">
+                            <i class="fas fa-book-plus fa-2x mb-2 d-block"></i>
+                            <small class="fw-bold">Add Course</small>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="{% url 'students:enrollment_list' %}" class="btn btn-info w-100 p-3 text-center">
+                            <i class="fas fa-clipboard-check fa-2x mb-2 d-block"></i>
+                            <small class="fw-bold">Enrollments</small>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="/admin/" class="btn btn-warning w-100 p-3 text-center">
+                            <i class="fas fa-tools fa-2x mb-2 d-block"></i>
+                            <small class="fw-bold">Admin Panel</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status Card -->
+        <!-- <div class="card">
+            <div class="card-header bg-transparent border-0 pb-0">
+                <h5 class="card-title mb-1">System Status</h5>
+                <p class="text-muted small mb-0">Current system information</p>
+            </div>
+            <div class="card-body">
+                <div class="status-item d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="status-dot bg-success me-2"></div>
+                        <span class="small">Database</span>
+                    </div>
+                    <span class="badge bg-success-subtle text-success">Online</span>
+                </div>
+
+                <div class="status-item d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="status-dot bg-success me-2"></div>
+                        <span class="small">API Services</span>
+                    </div>
+                    <span class="badge bg-success-subtle text-success">Active</span>
+                </div>
+
+                <div class="status-item d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="status-dot bg-warning me-2"></div>
+                        <span class="small">Backup</span>
+                    </div>
+                    <span class="badge bg-warning-subtle text-warning">Pending</span>
+                </div>
+
+                <hr class="my-3">
+
+                <div class="small text-muted">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Last Updated:</span>
+                        <span>{{ stats.generated_at|date:"M d, H:i" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Version:</span>
+                        <span>v1.0.0</span>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+    </div>
+</div>
+
+<style>
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.activity-feed .activity-item:last-child {
+    border-bottom: none !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Chart Data
+const departmentData = {
+    labels: [{% for dept in students_by_department %}'{{ dept.name }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+    datasets: [{
+        data: [{% for dept in students_by_department %}{{ dept.student_count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+        backgroundColor: [
+            'rgba(102, 126, 234, 0.8)',
+            'rgba(118, 75, 162, 0.8)',
+            'rgba(240, 147, 251, 0.8)',
+            'rgba(245, 87, 108, 0.8)',
+            'rgba(79, 172, 254, 0.8)',
+            'rgba(0, 242, 254, 0.8)'
+        ],
+        borderColor: [
+            'rgba(102, 126, 234, 1)',
+            'rgba(118, 75, 162, 1)',
+            'rgba(240, 147, 251, 1)',
+            'rgba(245, 87, 108, 1)',
+            'rgba(79, 172, 254, 1)',
+            'rgba(0, 242, 254, 1)'
+        ],
+        borderWidth: 2
+    }]
+};
+
+const yearData = {
+    labels: [{% for year in students_by_year %}'Year {{ year.year_of_study }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+    datasets: [{
+        label: 'Students',
+        data: [{% for year in students_by_year %}{{ year.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+        backgroundColor: 'rgba(102, 126, 234, 0.8)',
+        borderColor: 'rgba(102, 126, 234, 1)',
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
+    }]
+};
+
+// Chart Configuration
+const chartConfig = {
+    department: {
+        type: 'doughnut',
+        data: departmentData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        font: {
+                            size: 12,
+                            weight: '500'
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: 'white',
+                    bodyColor: 'white',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    displayColors: true
+                }
+            },
+            cutout: '60%',
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    },
+    year: {
+        type: 'bar',
+        data: yearData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: 'white',
+                    bodyColor: 'white',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 1,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#666',
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#666',
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeOutQuart'
+            }
+        }
+    }
+};
+
+// Initialize Chart
+let currentChart;
+const ctx = document.getElementById('mainChart').getContext('2d');
+
+function initChart(type = 'department') {
+    if (currentChart) {
+        currentChart.destroy();
+    }
+    currentChart = new Chart(ctx, chartConfig[type]);
+}
+
+// Chart Toggle Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize with department chart
+    initChart('department');
+
+    // Chart toggle buttons
+    document.querySelectorAll('[data-chart]').forEach(button => {
+        button.addEventListener('click', function() {
+            const chartType = this.getAttribute('data-chart');
+
+            // Update active button
+            document.querySelectorAll('[data-chart]').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+
+            // Switch chart
+            initChart(chartType);
+        });
+    });
+
+    // Add smooth animations to cards
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+});
+
+// Add some interactive effects
+document.addEventListener('DOMContentLoaded', function() {
+    // Hover effects for stat cards
+    document.querySelectorAll('.stat-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px) scale(1.02)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+
+    // Smooth scroll for navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

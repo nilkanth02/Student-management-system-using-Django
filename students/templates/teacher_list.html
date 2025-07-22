@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Teachers - EduManage{% endblock %}
+
+{% block page_title_main %}Teachers{% endblock %}
+{% block page_description %}Manage faculty and teaching staff{% endblock %}
+
+{% block page_actions %}
+<a href="/admin/students/teacher/add/" class="btn btn-primary">
+    <i class="fas fa-user-plus me-2"></i>Add Teacher
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Search Bar -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body p-3">
+                <form method="get" class="row g-3 align-items-center">
+                    <div class="col-md-8">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input class="form-control" type="search" name="search" placeholder="Search teachers by name or employee ID..." value="{{ request.GET.search }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="btn-group w-100">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i>Search
+                            </button>
+                            <a href="{% url 'students:teacher_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body p-3 text-center">
+                <h5 class="text-primary mb-0">{{ teachers|length }}</h5>
+                <small class="text-muted">Teachers Found</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Teachers Grid -->
+<div class="row">
+    {% for teacher in teachers %}
+    <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
+        <div class="card teacher-card h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="avatar-lg bg-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                        <span class="text-white h5 mb-0">{{ teacher.user.first_name.0 }}{{ teacher.user.last_name.0 }}</span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="card-title mb-1">{{ teacher.full_name }}</h5>
+                        <p class="text-muted small mb-0">{{ teacher.employee_id }}</p>
+                        {% if teacher.is_active %}
+                            <span class="badge bg-success-subtle text-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-secondary-subtle text-secondary">Inactive</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="teacher-info">
+                    <div class="info-item d-flex align-items-center mb-2">
+                        <i class="fas fa-building text-primary me-2"></i>
+                        <span class="small">{{ teacher.department.name }}</span>
+                    </div>
+                    <div class="info-item d-flex align-items-center mb-2">
+                        <i class="fas fa-graduation-cap text-success me-2"></i>
+                        <span class="small">{{ teacher.get_qualification_display }}</span>
+                    </div>
+                    <div class="info-item d-flex align-items-center mb-2">
+                        <i class="fas fa-calendar text-warning me-2"></i>
+                        <span class="small">{{ teacher.experience_years }} years experience</span>
+                    </div>
+                    <div class="info-item d-flex align-items-center mb-3">
+                        <i class="fas fa-clock text-info me-2"></i>
+                        <span class="small">Since {{ teacher.hire_date|date:"M Y" }}</span>
+                    </div>
+                </div>
+                
+                <div class="card-actions d-flex gap-2">
+                    <a href="#" class="btn btn-success btn-sm flex-grow-1">
+                        <i class="fas fa-eye me-1"></i>View Profile
+                    </a>
+                    <a href="/admin/students/teacher/{{ teacher.id }}/change/" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <div class="empty-state">
+                    <i class="fas fa-chalkboard-teacher fa-4x text-muted mb-4"></i>
+                    <h4 class="text-muted mb-3">No Teachers Found</h4>
+                    <p class="text-muted mb-4">
+                        {% if request.GET.search %}
+                            No teachers match your search criteria.
+                        {% else %}
+                            Get started by adding your first teacher to the system.
+                        {% endif %}
+                    </p>
+                    <div class="d-flex justify-content-center gap-2">
+                        {% if request.GET.search %}
+                            <a href="{% url 'students:teacher_list' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-times me-2"></i>Clear Search
+                            </a>
+                        {% endif %}
+                        <a href="/admin/students/teacher/add/" class="btn btn-success">
+                            <i class="fas fa-plus me-2"></i>Add First Teacher
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+.teacher-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.teacher-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.info-item {
+    padding: 0.25rem 0;
+}
+
+.info-item i {
+    width: 16px;
+    text-align: center;
+}
+</style>
+{% endblock %}

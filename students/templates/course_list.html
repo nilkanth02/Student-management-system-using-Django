@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Courses - Student Management System{% endblock %}
+
+{% block page_title_main %}Courses{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="get" class="d-flex">
+            <input class="form-control me-2" type="search" name="search" placeholder="Search courses..." value="{{ request.GET.search }}">
+            <button class="btn btn-outline-primary" type="submit">
+                <i class="fas fa-search"></i>
+            </button>
+        </form>
+    </div>
+    <div class="col-md-6 text-end">
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?semester=FALL">Fall Semester</a></li>
+                <li><a class="dropdown-item" href="?semester=SPRING">Spring Semester</a></li>
+                <li><a class="dropdown-item" href="?semester=SUMMER">Summer Semester</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="?is_active=true">Active Courses</a></li>
+                <li><a class="dropdown-item" href="?is_active=false">Inactive Courses</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'students:course_list' %}">Clear Filters</a></li>
+            </ul>
+        </div>
+        <a href="/admin/students/course/add/" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Course
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Course Name</th>
+                        <th>Department</th>
+                        <th>Teacher</th>
+                        <th>Credits</th>
+                        <th>Enrollment</th>
+                        <th>Schedule</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in courses %}
+                    <tr>
+                        <td>
+                            <strong class="text-primary">{{ course.course_code }}</strong>
+                            <small class="d-block text-muted">{{ course.semester }} {{ course.year }}</small>
+                        </td>
+                        <td>
+                            <div class="fw-bold">{{ course.name }}</div>
+                            <small class="text-muted">{{ course.description|truncatechars:50 }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{ course.department.code }}</span>
+                            <small class="d-block text-muted">{{ course.department.name }}</small>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-success rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    <span class="text-white small">{{ course.teacher.user.first_name.0 }}{{ course.teacher.user.last_name.0 }}</span>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">{{ course.teacher.full_name }}</div>
+                                    <small class="text-muted">{{ course.teacher.employee_id }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning">{{ course.credits }} Credits</span>
+                        </td>
+                        <td>
+                            <div class="progress" style="height: 20px;">
+                                {% with enrolled=course.enrolled_students_count total=course.max_students %}
+                                {% with percentage=enrolled|mul:100|div:total %}
+                                <div class="progress-bar {% if percentage < 80 %}bg-success{% elif percentage < 100 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                     role="progressbar" style="width: {{ percentage }}%">
+                                    {{ enrolled }}/{{ total }}
+                                </div>
+                                {% endwith %}
+                                {% endwith %}
+                            </div>
+                        </td>
+                        <td>
+                            <small class="text-muted">{{ course.schedule }}</small>
+                            <small class="d-block text-muted">{{ course.classroom }}</small>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="/admin/students/course/{{ course.id }}/change/" class="btn btn-outline-primary" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-info" title="View Enrollments">
+                                    <i class="fas fa-users"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No courses found.</p>
+                            <a href="/admin/students/course/add/" class="btn btn-primary">Add First Course</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Courses pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Previous</a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Summary Card -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <h5 class="text-primary">{{ courses|length }}</h5>
+                        <small class="text-muted">Courses Shown</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h5 class="text-success">{{ departments|length }}</h5>
+                        <small class="text-muted">Departments</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h5 class="text-info">Fall 2024</h5>
+                        <small class="text-muted">Current Semester</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h5 class="text-warning">Active</h5>
+                        <small class="text-muted">Status</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
